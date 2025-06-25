@@ -1,6 +1,8 @@
 ﻿@{
     ViewData["Title"] = "Početna stranica";
     var isLoggedIn = User.Identity.IsAuthenticated;
+    var isPruzatelj    = User.IsInRole("PružateljUsluga");
+
 }
 
 <div class="container py-5">
@@ -15,46 +17,47 @@
         var username = User.Identity.Name;
         <div class="alert alert-success mt-4 text-center">
             <h4>Dobrodošao natrag, @username!</h4>
-            <p>Spremni za novi izračun ili pregled opreme?</p>
-            <a class="btn btn-outline-primary" asp-controller="Kalkulator" asp-action="Index">Pokreni novi izračun</a>
         </div>
     }
 
 
     <div class="row text-center">
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="card h-100 shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title">Kalkulator</h5>
-                    <p class="card-text">Unesite dimenzije i materijal i izračunajte cijenu fasade.</p>
-                    <a class="btn btn-outline-primary" asp-controller="Kalkulator" asp-action="Index">Izračunaj</a>
+                    <h5 class="card-title">@(isPruzatelj ? "Kalkulator" : "Kalkulator")</h5>
+                    <p class="card-text">@(isPruzatelj
+                            ? "Brzi izračun ponude."
+                            : "Brza aproksimacija fasadnih poslova.")</p>
+                    <a class="btn btn-outline-primary" asp-controller="Usluge" asp-action="Index">@(isPruzatelj
+                            ? "Nova ponuda"
+                            : "Više")</a>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="card h-100 shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title">Najam opreme</h5>
-                    <p class="card-text">Pregledajte dostupnu opremu (skela, kombi, alati).</p>
-                    <a class="btn btn-outline-primary" asp-controller="Home" asp-action="Index">Pregledaj</a>
+                    <h5 class="card-title">@(isPruzatelj ? "Uredi opremu" : "Pregledaj opremu")</h5>
+                    <p class="card-text">@(isPruzatelj
+                            ? "Pregledajte svoju opremu za najam."
+                            : "Unajmite opremu već danas.")</p>
+                    <a class="btn btn-outline-primary" asp-controller="Usluge" asp-action="Index">@(isPruzatelj
+                            ? "Više"
+                            : "Pregledaj")</a>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="card h-100 shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title">Pošalji upit</h5>
-                    <p class="card-text">Kontaktirajte pružatelja usluga za dodatne informacije.</p>
-                    <a class="btn btn-outline-primary" asp-controller="Usluge" asp-action="Index">Kontaktiraj</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Rezerviraj termin</h5>
-                    <p class="card-text">Pogledajte slobodne termine za izvođenje radova.</p>
-                    <a class="btn btn-outline-primary" asp-controller="Home" asp-action="Index">Rezerviraj</a>
+                    <h5 class="card-title">@(isPruzatelj ? "Pročitaj upite" : "Pošalji upit")</h5>
+                    <p class="card-text">@(isPruzatelj
+                            ? "Pregledajte pristigle upite od kupaca."
+                            : "Pregled tvrtaka u vašem području.")</p>
+                    <a class="btn btn-outline-primary" asp-controller="Usluge" asp-action="Index">@(isPruzatelj
+                            ? "Više"
+                            : "Kontaktiraj")</a>
                 </div>
             </div>
         </div>

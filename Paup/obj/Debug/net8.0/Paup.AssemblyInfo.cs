@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Paup")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ec844b669b714af01c9c3ea3c0f71aea5f7dd37d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e7d439803bd3ba8bd60e7eff8446d3375215d651")]
 [assembly: System.Reflection.AssemblyProductAttribute("Paup")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Paup")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
