@@ -1,0 +1,82 @@
+@model List<Oprema>
+@{
+    ViewData["Title"] = "Moje Opreme";
+}
+
+<h2>Moje objavljene opreme</h2>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Moja oprema</h2>
+    <a asp-action="Dodaj" class="btn btn-primary">Dodaj opremu</a>
+</div>
+
+@if (!Model.Any())
+{
+    <p>Nemate još nijednu objavu.</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Ime</th>
+            <th>Opis</th>
+            <th>Količina</th>
+            <th>Mjera</th>
+            <th>Vrsta ponude</th>
+            <th>Cijena</th>
+            <th>Akcije</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var oprema in Model)
+        {
+            <tr>
+                <td>@oprema.Ime</td>
+                <td>@oprema.Opis</td>
+                <td>@oprema.Kolicina</td>
+                <td>@oprema.Mjera</td>
+                <td>@oprema.VrstaPonude</td>
+                <td>
+                    @if (oprema.VrstaPonude == VrstaPonude.Prodaja)
+                    {
+                        @($"{oprema.Cijena:0.00} €")
+                    }
+                    else if (oprema.VrstaPonude == VrstaPonude.Najam)
+                    {
+                        @($"{oprema.CijenaNajma:0.00} €/dan")
+                    }
+                </td>
+                <td>
+                    <form asp-action="Delete" method="post" style="display:inline">
+                        <input type="hidden" name="id" value="@oprema.Id" />
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Obrisati opremu?');">Obriši</button>
+                    </form>
+
+                <td>
+                    <form asp-action="UmanjiKolicinu" method="post"
+                          class="d-flex align-items-center gap-1">
+                        <input type="hidden" name="id" value="@oprema.Id" />
+
+                        <input type="number"
+                               name="broj"
+                               class="form-control form-control-sm"
+                               style="max-width:90px"
+                               min="1"
+                               max="@oprema.Kolicina"
+                               value="1"
+                               required />
+
+                        <button type="submit"
+                                class="btn btn-warning btn-sm">
+                            Umanji
+                        </button>
+                    </form>
+                </td>
+
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,13 @@
+@{
+    ViewData["Title"] = "Pristup nije dozvoljen";
+}
+
+<div class="container text-center mt-5">
+    <h2>Pristup nije dozvoljen</h2>
+    <p>Za slanje upita potrebno je biti registrirani korisnik.</p>
+
+    <div class="mt-4">
+        <a class="btn btn-primary me-2" asp-controller="Account" asp-action="Register">Registriraj se</a>
+        <a class="btn btn-outline-secondary" asp-controller="Account" asp-action="Login">Prijavi se</a>
+    </div>
+</div>

@@ -1,0 +1,101 @@
+@using Paup.Enum
+@model Paup.Models.RegisterView
+
+<form asp-action="Register" method="post">
+
+    <div class="form-group">
+        <label asp-for="UserName"></label>
+        <input asp-for="UserName" class="form-control" />
+        <span asp-validation-for="UserName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" type="password" class="form-control"
+               placeholder="Min 10 znakova, veliko slovo, broj i znak" />   
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ConfirmPassword"></label>
+        <input asp-for="ConfirmPassword" type="password" class="form-control" />
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="KontaktBroj"></label>
+        <input asp-for="KontaktBroj" class="form-control" type="tel" placeholder="format broja mora biti npr. 0914324567" pattern="[0-9+]{8,15}" />
+        <span asp-validation-for="KontaktBroj" class="text-danger"></span>
+    </div>
+    
+    <div id="singleZupanija" class="form-group" style="display:none;">
+        <label asp-for="Zupanija"></label>
+        <select asp-for="Zupanija" asp-items="Html.GetEnumSelectList<Zupanija>()" class="form-control">
+            <option value="">-- Odaberite županiju --</option>
+        </select>
+        <span asp-validation-for="Zupanija" class="text-danger"></span>
+    </div>
+    
+
+    <div id="multiZupanija" class="form-group" style="display:none;">
+        <label>Županije (drži Ctrl ili Cmd za više odabira):</label>
+        <select asp-for="Zupanije" asp-items="Html.GetEnumSelectList<Zupanija>()" multiple class="form-control">
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Uloga:</label><br />
+        @foreach (var role in Enum.GetValues(typeof(Paup.Enum.VrstaKorisnika)))
+        {
+            <label>
+                <input type="radio" name="OdabranaUloga" value="@role" />
+                @role
+            </label><br />
+        }
+    </div>
+
+    <button type="submit" class="btn btn-primary">Registriraj se</button>
+
+    <p class="mt-3">
+        Već imate račun?
+        <a asp-controller="Account" asp-action="Login">Prijavite se</a>
+    </p>
+</form>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const radios = document.querySelectorAll("input[name='OdabranaUloga']");
+            const single = document.getElementById("singleZupanija");
+            const multi = document.getElementById("multiZupanija");
+
+            function toggleZupanije() {
+                const selected = [...radios].find(r => r.checked)?.value;
+                if (selected === "Korisnik") {
+                    single.style.display = "block";
+                    multi.style.display = "none";
+                } else if (selected === "PružateljUsluga") {
+                    single.style.display = "none";
+                    multi.style.display = "block";
+                } else {
+                    single.style.display = "none";
+                    multi.style.display = "none";
+                }
+            }
+
+            radios.forEach(radio => {
+                radio.addEventListener("change", toggleZupanije);
+            });
+
+            toggleZupanije();
+        });
+    </script>
+
+}
+

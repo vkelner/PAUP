@@ -1,0 +1,157 @@
+@model List<Paup.Models.PruzateljUsluge>
+
+@if (TempData["UpitPoslan"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["UpitPoslan"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zatvori"></button>
+    </div>
+}
+
+<h2>Pružatelji usluga u tvojoj županiji</h2>
+
+@if (User.IsInRole("Korisnik"))
+{
+    <div class="mb-3">
+        <a class="btn btn-outline-secondary" asp-controller="Usluge" asp-action="MojiUpiti">
+            Moji upiti
+        </a>
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <p>Nema dostupnih izvođača u tvojoj županiji.</p>
+}
+else
+{
+    foreach (var p in Model)
+    {
+        var collapseId = $"formUpit{p.Id}";
+
+        <div class="card p-3 mb-4">
+            <h4>@p.NazivFirme</h4>
+            <p><strong>Telefon:</strong> @p.Telefon</p>
+            <p><strong>Adresa:</strong> @p.Adresa</p>
+            <p><strong>Opis:</strong> @p.Opis</p>
+
+            <button class="btn btn-outline-primary btn-sm mt-2" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="false">
+                Pošaljite upit
+            </button>
+
+            <div class="collapse mt-3" id="@collapseId">
+                <form asp-controller="Usluge" asp-action="PosaljiUpit" method="post" novalidate class="needs-validation">
+                    <input type="hidden" name="primateljId" value="@p.AppKorisnikId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Ime i prezime</label>
+                        <input type="text" name="imePrezime" class="form-control"
+                               required maxlength="40"
+                               pattern="^[a-zA-ZčćžšđČĆŽŠĐ\s]{1,40}$"
+                               oninvalid="provjeraPolja(this, 'Polje ne smije sadržavati brojeve.')"
+                               oninput="ocistiGresku(this)" />
+                        <div class="invalid-feedback"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Telefon</label>
+                        <input type="tel" name="Telefon" class="form-control"
+                               required maxlength="20"
+                               pattern="^\+?[0-9\s\-()]{6,20}$"
+                               onkeypress="return /^[0-9+\-() ]$/.test(event.key)"
+                               oninvalid="provjeraPolja(this, 'Unesite ispravan broj telefona.')"
+                               oninput="ocistiGresku(this)" />
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Adresa</label>
+                        <input type="text" name="adresa" class="form-control"
+                               required maxlength="40"
+                               oninvalid="provjeraPolja(this, 'Unesite ispravnu adresu.')"
+                               oninput="ocistiGresku(this)" />
+                        <div class="invalid-feedback"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Grad</label>
+                        <input type="text" name="grad" class="form-control"
+                               required maxlength="30"
+                               pattern="^[a-zA-ZčćžšđČĆŽŠĐ\s]{1,30}$"
+                               oninvalid="provjeraPolja(this, 'Polje ne smije sadržavati brojeve.')"
+                               oninput="ocistiGresku(this)" />
+                        <div class="invalid-feedback"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Opis radova</label>
+                        <textarea name="poruka" class="form-control" rows="3"
+                                  required maxlength="300"
+                                  oninvalid="provjeraPolja(this, 'Unesite opis radova (maks. 300 znakova).')"
+                                  oninput="ocistiGresku(this)"></textarea>
+                        <div class="invalid-feedback"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Odaberite dan početka radova</label>
+                        <select name="DatumRezervacije" class="form-select" required>
+                            <option value="">Odaberite dan</option>
+                            @foreach (var datum in p.SlobodniDani)
+                            {
+                                <option value="@datum.ToString("yyyy-MM-dd")">
+                                    @datum.ToString("dddd, dd.MM.yyyy", new System.Globalization.CultureInfo("hr-HR"))
+                                </option>
+                            }
+                        </select>
+                        <div class="invalid-feedback">Odaberite datum.</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Pošalji</button>
+                </form>
+            </div>
+        </div>
+    }
+}
+
+@section Scripts {
+    <script>
+        function provjeraPolja(input, invalidMessage) {
+            const errorDiv = input.parentElement.querySelector('.invalid-feedback');
+            const emptyMessage = "Ispunite polje.";
+
+            if (!input.value.trim()) {
+                input.setCustomValidity(emptyMessage);
+                errorDiv.textContent = emptyMessage;
+            } else if (input.validity.patternMismatch) {
+                input.setCustomValidity(invalidMessage);
+                errorDiv.textContent = invalidMessage;
+            } else {
+                input.setCustomValidity('');
+                errorDiv.textContent = '';
+            }
+}
+
+        function ocistiGresku(input) {
+            input.setCustomValidity('');
+            const errorDiv = input.parentElement.querySelector('.invalid-feedback');
+            errorDiv.textContent = '';
+        }
+
+        (() => {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
+}
+
+

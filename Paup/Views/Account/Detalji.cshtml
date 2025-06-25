@@ -1,0 +1,23 @@
+@model Paup.Models.AppKorisnik
+
+@{
+    ViewData["Title"] = "Moj profil";
+}
+
+<h2 class="mt-4">Moj profil</h2>
+
+<div class="card p-4 shadow-sm mt-3">
+    <p><strong>Email:</strong> @Model.Email</p>
+    <p><strong>Korisničko ime:</strong> @Model.UserName</p>
+    <p><strong>Uloga:</strong> @Model.Uloga</p>
+    @if (!string.IsNullOrEmpty(Model.Zupanije))
+    {
+        <p><strong>Županije:</strong> @string.Join(", ", Model.Zupanije.Split(","))</p>
+    }
+    <a class="btn btn-outline-primary mt-3" asp-action="UrediZupanije">Uredi županije</a>
+
+
+    <form asp-controller="Account" asp-action="Logout" method="post">
+        <button type="submit" class="btn btn-danger mt-3">Odjava</button>
+    </form>
+</div>

@@ -1,0 +1,28 @@
+@model List<Paup.Models.Upit>
+
+<h2>Prihvaćeni upiti</h2>
+
+@if (!Model.Any())
+{
+    <p>Nema prihvaćenih upita.</p>
+}
+else
+{
+    foreach (var upit in Model)
+    {
+        <div class="card p-3 mb-3">
+            <p><strong>Ime i prezime:</strong> @upit.ImePrezime</p>
+            <p><strong>Adresa:</strong> @upit.Adresa</p>
+            <p><strong>Telefon:</strong> @upit.Telefon</p>
+            <p><strong>Grad:</strong> @upit.Grad</p>
+            <p><strong>Opis radova:</strong> @upit.Poruka</p>
+            <p><strong>Datum rezervacije:</strong> @upit.DatumRezervacije?.ToString("dd.MM.yyyy")</p>
+            <p><strong>Trajanje posla:</strong> @upit.TrajanjeDana dana</p>
+            <form asp-action="ObrisiPrihvaceniUpit" method="post" onsubmit="return confirm('Jeste li sigurni da želite obrisati upit?');">
+                <input type="hidden" name="id" value="@upit.Id" />
+                <button type="submit" class="btn btn-danger btn-sm mt-2">Obriši</button>
+            </form>
+
+        </div>
+    }
+}

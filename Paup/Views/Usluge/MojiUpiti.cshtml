@@ -1,0 +1,50 @@
+@model List<Paup.Models.Upit>
+
+<h2>Moji upiti</h2>
+
+@if (!Model.Any())
+{
+    <p>Niste poslali nijedan upit.</p>
+}
+else
+{
+    foreach (var upit in Model)
+    {
+        <div class="card p-3 mb-3">
+            <p><strong>Ime i prezime:</strong> @upit.ImePrezime</p>
+            <p><strong>Adresa:</strong> @upit.Adresa</p>
+            <p><strong>Telefon:</strong> @upit.Telefon</p>
+            <p><strong>Grad:</strong> @upit.Grad</p>
+            <p><strong>Poruka:</strong> @upit.Poruka</p>
+            <p><strong>Datum rezervacije:</strong> @(upit.DatumRezervacije?.ToString("dd.MM.yyyy") ?? "Nije odabran")</p>
+            <p><strong>Vrijeme slanja:</strong> @upit.Vrijeme.ToString("g")</p>
+
+            @if (upit.Odbijen)
+            {
+                <div class="alert alert-danger mt-2">
+                    <strong>Status:</strong> Odbijeno<br/>
+                    <strong>Razlog:</strong> @upit.OdbijenRazlog
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(upit.OdbijenRazlog) && upit.OdbijenRazlog.StartsWith("Prihvaćeno"))
+            {
+                <div class="alert alert-success mt-2">
+                    <strong>Status:</strong> Prihvaćeno<br/>
+                    <small>Pruzatelj će vas kontaktirati za više detalja!</small>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-secondary mt-2">
+                    <strong>Status:</strong> Na čekanju
+                </div>
+            }
+
+
+            <form method="post" asp-action="ObrisiUpit">
+                <input type="hidden" name="id" value="@upit.Id"/>
+                <button class="btn btn-danger btn-sm mt-2" type="submit">Obriši upit</button>
+            </form>
+        </div>
+    }
+}

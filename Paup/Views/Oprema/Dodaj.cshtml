@@ -1,0 +1,81 @@
+@model Oprema
+@{
+    ViewData["Title"] = "Dodaj opremu";
+}
+
+<h2>Dodaj opremu</h2>
+
+
+<form id="oprema-form" asp-action="Dodaj" method="post">    <div class="form-group" novalidate>
+        <label asp-for="Ime"></label>
+        <input asp-for="Ime" class="form-control" />
+        <span asp-validation-for="Ime" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Opis"></label>
+        <textarea asp-for="Opis" class="form-control"></textarea>
+        <span asp-validation-for="Opis" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Kolicina"></label>
+        <input asp-for="Kolicina" type="number" class="form-control" />
+        <span asp-validation-for="Kolicina" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="VrstaPonude">Vrsta ponude</label>
+        <select asp-for="VrstaPonude" class="form-control">
+            @foreach (VrstaPonude v in Enum.GetValues(typeof(VrstaPonude)))
+            {
+                <option value="@v">@v</option>
+            }
+        </select>
+    </div>
+
+    <div id="najam-po-wrapper" class="form-group" style="display:none">
+        <label asp-for="NajamPo">Cijena po</label>
+        <select asp-for="NajamPo" asp-items="Html.GetEnumSelectList<NajamTip>()" class="form-control"></select>
+        <span asp-validation-for="NajamPo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Cijena">Cijena</label>
+        <input asp-for="Cijena" type="text" class="form-control" />
+        <span asp-validation-for="Cijena" class="text-danger"></span>
+    </div>
+
+    
+
+    <button id="submitBtn" type="submit" class="btn btn-primary">Dodaj</button>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/localization/messages_hr.min.js"></script>>
+
+    <script>
+        const ponudaSelect = document.getElementById("VrstaPonude");
+        const najamPoWrapper = document.getElementById("najam-po-wrapper");
+
+        function toggleNajamPo() {
+            najamPoWrapper.style.display = ponudaSelect.value === "Najam" ? "block" : "none";
+        }
+
+        ponudaSelect.addEventListener("change", toggleNajamPo);
+        toggleNajamPo();
+
+        const form = $('#oprema-form');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.attr('novalidate', 'novalidate');
+
+        form.on('submit', function (e) {
+            if (!form.valid()) {
+                e.preventDefault();
+            }
+        });
+    </script>
+}

@@ -1,0 +1,23 @@
+@model Paup.Models.Kalkulator
+
+<form asp-action="Izracunaj" method="post">
+    <input type="hidden" asp-for="VrstaMaterijala" />
+    <input type="hidden" asp-for="Debljina" />
+
+    <h3>Unesite dimenzije zidova (visina i širina u metrima):</h3>
+
+    @for (int i = 0; i < Model.BrojZidovaLista.Count; i++)
+    {
+        <div>
+            <h4>Zid @(i + 1)</h4>
+
+            <label>Visina (m):</label>
+            <input type="number" step="0.01" name="BrojZidovaLista[@i].Visina" required />
+            
+            <label>Širina (m):</label>
+            <input type="number" step="0.01" name="BrojZidovaLista[@i].Sirina" required />
+        </div>
+    }
+
+    <button type="submit">Izračunaj</button>
+</form>

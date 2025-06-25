@@ -1,0 +1,37 @@
+@using Paup.Enum
+@model EditZupanija
+
+<h2>Uredi županije</h2>
+
+<form asp-controller="Usluge" asp-action="UrediZupanije" method="post">
+    @Html.AntiForgeryToken()
+
+    <div>
+        <label>Korisničko ime:</label>
+        <input class="form-control" value="@Model.UserName" readonly />
+    </div>
+
+    <div>
+        <label>Email:</label>
+        <input class="form-control" value="@Model.Email" readonly />
+    </div>
+
+    @if (User.IsInRole("Korisnik"))
+    {
+        <div>
+            <label>Županija:</label>
+            <select asp-for="JednaZupanija" asp-items="Html.GetEnumSelectList<Zupanija>()" class="form-control">
+                <option value="">-- Odaberite županiju --</option>
+            </select>
+        </div>
+    }
+    else if (User.IsInRole("PružateljUsluga"))
+    {
+        <div>
+            <label>Županije (više odabira):</label>
+            <select asp-for="OdabraneZupanije" asp-items="Html.GetEnumSelectList<Zupanija>()" class="form-control" multiple name="OdabraneZupanije"></select>
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary mt-3">Spremi promjene</button>
+</form>

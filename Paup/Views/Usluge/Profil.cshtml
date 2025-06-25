@@ -1,0 +1,26 @@
+@model Paup.Models.PruzateljUsluge
+
+<h2>Moj profil</h2>
+
+<table class="table">
+    <tr>
+        <th>Naziv firme</th>
+        <td>@Model.NazivFirme</td>
+    </tr>
+    <tr>
+        <th>Telefon</th>
+        <td>@Model.Telefon</td>
+    </tr>
+    <tr>
+        <th>Adresa</th>
+        <td>@Model.Adresa</td>
+    </tr>
+    <tr>
+        <th>Opis</th>
+        <td>@Model.Opis</td>
+    </tr>
+    <tr>
+        <th>Dostupan</th>
+        <td>@(Model.Dostupan ? "Da" : "Ne")</td>
+    </tr>
+</table>

@@ -1,0 +1,51 @@
+@model List<Oprema>
+@{
+    ViewData["Title"] = "Dostupna oprema";
+}
+
+<h2>Dostupna oprema</h2>
+
+@if (!Model.Any())
+{
+    <p>Trenutno nema dostupne opreme.</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Ime</h5>
+                        <p class="card-text">@item.Opis</p>
+                        <p><strong>Količina:</strong> @item.Kolicina (@item.Mjera)</p>
+                        <p><strong>Vrsta ponude:</strong> @item.VrstaPonude</p>
+
+                        @if (item.VrstaPonude == VrstaPonude.Prodaja)
+                        {
+                            <p><strong>Cijena:</strong> @item.Cijena.ToString("0.00") €</p>
+                        }
+                        else if (item.VrstaPonude == VrstaPonude.Najam)
+                        {
+                            <p><strong>Najam:</strong> @item.CijenaNajma?.ToString("0.00") € / @item.NajamPo</p>
+                        }
+
+                        <hr />
+                        <p><strong>Kontakt:</strong></p>
+                        <p>
+                            <strong>Korisnik:</strong> @item.PruzateljUsluge?.UserName <br />
+                            <strong>Email:</strong> @item.PruzateljUsluge?.Email <br />
+                            <strong>Telefon:</strong> @item.PruzateljUsluge?.KontaktBroj
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+
+
+
+

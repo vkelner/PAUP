@@ -1,0 +1,418 @@
+@model Paup.Models.Kalkulator
+
+@{
+    var isPruzatelj = ViewBag.IsPruzateljUsluga as bool? ?? false;
+}
+
+@{
+    ViewData["Title"] = "Kalkulator fasade";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="text-center mb-4">Kalkulator fasade</h2>
+            <p class="text-center mb-4">Prikazana cijena je aproksimacija i može varirati ovisno o stvarnim uvjetima i dodatnim troškovima. Za točnu ponudu, molimo kontaktirajte stručnjaka ili izvođača radova.</p>
+
+            <form asp-action="Index" method="post" id="kalkulatorForm" novalidate>
+                @Html.AntiForgeryToken()
+                <div class="text-danger mb-3" id="globalValidationSummary"></div>
+
+                <div class="mb-3">
+                    <label class="form-label">Vrsta materijala:</label>
+                    <select asp-for="VrstaMaterijala"
+                            asp-items="Html.GetEnumSelectList<Paup.Enum.VrstaMaterijala>()"
+                            class="form-select" required></select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Debljina (cm):</label>
+                    <input id="Debljina"
+                           asp-for="Debljina"
+                           type="number" step="0.1" min="2" max="25"
+                           class="form-control"
+                           placeholder="Unesite broj."
+                           value=""
+                           />
+                    <span id="debljinaGreska" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Broj zidova:</label>
+                    <input asp-for="BrojZidova" id="brojZidova" type="number" min="1" max="40" step="1"
+                           class="form-control"
+                           placeholder="Unesite broj."
+                           value=""
+                           />
+                    <span id="brojZidovaGreska" class="text-danger"></span>
+
+                </div>
+
+                <button type="button" id="dodajZidoveBtn" class="btn btn-secondary mb-3" onclick="dodajZidove()" disabled>
+                    Dodaj zidove
+                </button>
+
+
+                <div id="zidoviContainer">
+                </div>
+                
+                @if (isPruzatelj)
+                {
+                    <hr class="my-4" />
+                    <h4>Dodatni troškovi</h4>
+
+                    <div id="dodatniTroskoviContainer">
+                        @for (int i = 0; i < Model.DodatniTroskovi.Count; i++)
+                        {
+                            var naslovName = $"DodatniTroskovi[{i}].Naslov";
+                            var opisName = $"DodatniTroskovi[{i}].Opis";
+                            var cijenaName = $"DodatniTroskovi[{i}].Cijena";
+                            var trosak = Model.DodatniTroskovi[i];
+
+                            <div class="border p-2 mb-3">
+                                <h5>Dodatni trošak @(i + 1)</h5>
+
+                                <label>Naslov:</label>
+                                <input name="@naslovName"
+                                       value="@trosak.Naslov"
+                                       class="form-control"
+                                       maxlength="50"
+                                       required />
+                                <span class="text-danger" data-valmsg-for="@naslovName" data-valmsg-replace="true"></span>
+
+                                <label>Opis:</label>
+                                <textarea name="@opisName"
+                  class="form-control"
+                  maxlength="200"
+                  required>@trosak.Opis</textarea>
+                                <span class="text-danger" data-valmsg-for="@opisName" data-valmsg-replace="true"></span>
+
+                                <label>Cijena (€):</label>
+                                <input name="@cijenaName"
+                                       value="@trosak.Cijena"
+                                       type="number"
+                                       step="0.01"
+                                       min="0"
+                                       max="10000"
+                                       class="form-control"
+                                       required />
+                                <span class="text-danger" data-valmsg-for="@cijenaName" data-valmsg-replace="true"></span>
+                            </div>
+                        }
+                    </div>
+
+
+                    <button type="button" class="btn btn-outline-primary mb-3" onclick="dodajTrosak()">Dodaj trošak</button>
+                }
+
+
+                <button type="submit" class="btn btn-secondary mt-3 w-100" id="submitBtn" disabled>Izračunaj</button>
+            </form>
+
+            @if (isPruzatelj)
+            {
+                bool calcDone = ViewBag.Calculated as bool? ?? false;
+                var pdfBtnIskljucen = calcDone ? "" : "disabled";
+
+                <form asp-action="GenerirajPdf" method="post" id="pdfForm">
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" name="VrstaMaterijala" value="@Model.VrstaMaterijala" />
+                    <input type="hidden" name="Debljina" value="@Model.Debljina" />
+                    <input type="hidden" name="BrojZidova" value="@Model.BrojZidova" />
+
+                    <button type="submit" class="btn btn-success w-100 mt-2" id="generatePdfBtn" @pdfBtnIskljucen>
+                        Generiraj PDF
+                    </button>
+                </form>
+            }
+
+
+            @if (Model.BrojZidovaLista != null && Model.BrojZidovaLista.Any())
+            {
+                <hr class="my-4" />
+                <h3 class="text-center">Rezultat kalkulacije</h3>
+                <p><strong>Ukupna površina:</strong> @Model.UkupnaPovrsina m²</p>
+                <p><strong>Cijena po m²:</strong> @Model.CijenaUkupnoPoM2 €</p>
+                <p><strong>Ukupna cijena kompletne fasade:</strong> @Model.UkupnaCijena €</p>
+            }
+
+            <div id="formErrorMessage" class="text-danger text-center mb-2 d-none">
+                Molimo popunite sva obavezna polja.
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        
+        let izracunajClicked = false;
+
+
+        document.getElementById('submitBtn').addEventListener('click', function () {
+            izracunajClicked = true;
+            document.getElementById('generatePdfBtn').disabled = false;
+        });
+
+        
+        jQuery.extend(jQuery.validator.messages, {
+            required: "Ovo polje je obavezno.",
+            number: "Unesite broj.",
+            maxlength: jQuery.validator.format("Unesite najviše {0} znakova."),
+            minlength: jQuery.validator.format("Unesite najmanje {0} znakova."),
+            rangelength: jQuery.validator.format("Unesite između {0} i {1} znakova."),
+            range: jQuery.validator.format("Unesite vrijednost između {0} i {1}."),
+            max: jQuery.validator.format("Unesite vrijednost manju ili jednaku {0}."),
+            min: jQuery.validator.format("Unesite vrijednost veću ili jednaku {0}.")
+            
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll("form").forEach(form => {
+                form.setAttribute("novalidate", "novalidate");
+            });
+
+            document.addEventListener("input", validacijaForme);
+        });
+
+        function dodajZidove() {
+            const maxZidova = 30;
+            const brojInput = document.getElementById("brojZidova");
+            const broj = parseInt(brojInput.value);
+            const container = document.getElementById("zidoviContainer");
+
+            if (isNaN(broj) || broj < 1 || broj > maxZidova) return;
+
+            container.innerHTML = "";
+
+            for (let i = 0; i < broj; i++) {
+                const zidDiv = document.createElement("div");
+                zidDiv.className = "border p-2 my-2";
+                zidDiv.innerHTML = `
+                    <h5>Zid ${i + 1}</h5>
+                    <label>Visina(m):</label>
+                    <input name="BrojZidovaLista[${i}].Visina" type="number" step="0.01" min="0.5" max="100" required class="form-control" />
+                    <span class="field-validation-valid text-danger" data-valmsg-for="BrojZidovaLista[${i}].Visina" data-valmsg-replace="true"></span>
+                    <br>
+                    <label>Širina(m):</label>
+                    <input name="BrojZidovaLista[${i}].Sirina" type="number" step="0.01" min="0.5" max="100" required class="form-control" />
+                    <span class="field-validation-valid text-danger" data-valmsg-for="BrojZidovaLista[${i}].Sirina" data-valmsg-replace="true"></span>
+                    <br>
+                    <div id="praznineZida_${i}" class="mt-3"></div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary mt-2" onclick="dodajPrazninu(${i})">Dodaj prazninu</button>
+                `;
+                container.appendChild(zidDiv);
+            }
+
+            $.validator.unobtrusive.parse("#kalkulatorForm");
+            validacijaForme();
+        }
+
+        function dodajPrazninu(zidIndex) {
+            const container = document.getElementById(`praznineZida_${zidIndex}`);
+            const broj = container.querySelectorAll(".praznina-blok").length;
+
+            const div = document.createElement("div");
+            div.className = "bg-light p-2 my-1 praznina-blok";
+
+            div.innerHTML = `
+                <label>Tip:</label>
+                <input name="BrojZidovaLista[${zidIndex}].Praznine[${broj}].Tip" class="form-control" placeholder="Prozor, vrata..." required />
+                <span class="field-validation-valid text-danger"
+                      data-valmsg-for="BrojZidovaLista[${zidIndex}].Praznine[${broj}].Tip"
+                      data-valmsg-replace="true"></span>
+                <br>
+                <label>Visina:</label>
+                <input name="BrojZidovaLista[${zidIndex}].Praznine[${broj}].Visina" type="number" step="0.01" min="0.1" max="100" class="form-control" required />
+                <span class="field-validation-valid text-danger"
+                      data-valmsg-for="BrojZidovaLista[${zidIndex}].Praznine[${broj}].Visina"
+                      data-valmsg-replace="true"></span>
+                <br>
+                <label>Širina:</label>
+                <input name="BrojZidovaLista[${zidIndex}].Praznine[${broj}].Sirina" type="number" step="0.01" min="0.1" max="100" class="form-control" required />
+                <span class="field-validation-valid text-danger"
+                      data-valmsg-for="BrojZidovaLista[${zidIndex}].Praznine[${broj}].Sirina"
+                      data-valmsg-replace="true"></span>
+              
+                <div class="d-flex justify-content-end mt-2">
+                    <button type="button" class="btn btn-sm btn-danger"
+                            onclick="this.closest('.praznina-blok').remove(); validacijaForme();">Obriši prazninu</button>
+                </div>
+            `;
+            container.appendChild(div);
+            $.validator.unobtrusive.parse("#kalkulatorForm");
+        }
+
+        function validacijaForme() {
+            const form = document.getElementById("kalkulatorForm");
+            const submitBtn = document.getElementById("submitBtn");
+            const errorMessage = document.getElementById("formErrorMessage");
+
+            const requiredInputs = form.querySelectorAll("input[required], select[required]");
+            let allFilled = true;
+
+            requiredInputs.forEach(input => {
+                if (input.offsetParent !== null && input.value.trim() === "") {
+                    allFilled = false;
+                }
+            });
+
+            submitBtn.disabled = !allFilled;
+            errorMessage.classList.toggle("d-none", allFilled);
+        }
+
+        function dodajTrosak() {
+            const container = document.getElementById("dodatniTroskoviContainer");
+            const index = container.querySelectorAll(".dodatni-trosak-blok").length;
+
+            const div = document.createElement("div");
+            div.className = "border p-2 mb-3 dodatni-trosak-blok";
+
+            div.innerHTML = `
+        <h5>Dodatni trošak ${index + 1}</h5>
+
+        <label>Naslov:</label>
+        <input name="DodatniTroskovi[${index}].Naslov"
+               class="form-control"
+               data-val="true"
+               data-val-required="Unesite naslov troška."
+               maxlength="50" required />
+        <span class="field-validation-valid text-danger"
+              data-valmsg-for="DodatniTroskovi[${index}].Naslov"
+              data-valmsg-replace="true"></span>
+<br>
+        <label>Opis:</label>
+        <textarea name="DodatniTroskovi[${index}].Opis"
+                  class="form-control"
+                  maxlength="200"
+                  required
+                  data-val="true"
+                  data-val-required="Unesite opis troška."></textarea>
+        <span class="field-validation-valid text-danger"
+              data-valmsg-for="DodatniTroskovi[${index}].Opis"
+              data-valmsg-replace="true"></span>
+<br>
+        <label>Cijena (€):</label>
+        <input name="DodatniTroskovi[${index}].Cijena"
+               type="number"
+               step="0.01"
+               min="0"
+               max="10000"
+               class="form-control"
+               required
+               data-val="true"
+               data-val-required="Unesite cijenu."
+               data-val-range="Unesite valjanu cijenu." />
+        <span class="field-validation-valid text-danger"
+              data-valmsg-for="DodatniTroskovi[${index}].Cijena"
+              data-valmsg-replace="true"></span>
+
+        <div class="d-flex justify-content-end mt-2">
+            <button type="button" class="btn btn-sm btn-danger"
+                    onclick="this.closest('.dodatni-trosak-blok').remove();">
+                Obriši trošak
+            </button>
+        </div>
+    `;
+
+            container.appendChild(div);
+            $.validator.unobtrusive.parse("#kalkulatorForm");
+        }
+
+        let interakcijaPolja = true;
+
+        function validirajFormu() {
+            const zidoviValid = validirajBrojZidova();
+            const debljinaValid = validirajDebljinu();
+            document.getElementById("dodajZidoveBtn").disabled = !(zidoviValid && debljinaValid);
+        }
+
+        function validirajBrojZidova() {
+            const input = document.getElementById("brojZidova");
+            const error = document.getElementById("brojZidovaGreska");
+            const value = input.value.trim();
+            const broj = parseFloat(value);
+
+            if (value === "") {
+                error.textContent = "Polje je obavezno.";
+                return false;
+            }
+            if (!Number.isFinite(broj)) {
+                error.textContent = "Unesite broj.";
+                return false;
+            }
+            if (!Number.isInteger(broj)) {
+                error.textContent = "Unesite cijeli broj.";
+                return false;
+            }
+            if (broj < 1 || broj > 40) {
+                error.textContent = "Broj zidova mora biti između 1 i 40.";
+                return false;
+            }
+
+            error.textContent = "";
+            return true;
+        }
+
+        function validirajDebljinu() {
+            const input = document.getElementById("Debljina");
+            const error = document.getElementById("debljinaGreska");
+            const value = input.value.trim();
+            const broj = parseFloat(value);
+
+            if (value === "") {
+                error.textContent = "Polje je obavezno.";
+                return false;
+            }
+            if (!Number.isFinite(broj)) {
+                error.textContent = "Unesite broj.";
+                return false;
+            }
+            if (broj < 2 || broj > 25) {
+                error.textContent = "Debljina mora biti između 2 i 25 cm.";
+                return false;
+            }
+
+            error.textContent = "";
+            return true;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("brojZidova").addEventListener("input", validirajFormu);
+            document.getElementById("Debljina").addEventListener("input", validirajFormu);
+        });
+
+        document.querySelector('#pdfForm').addEventListener('submit', function (e) {
+            const pdfBtn = document.getElementById('generatePdfBtn');
+            if (pdfBtn.hasAttribute('disabled')) {
+                e.preventDefault();
+                alert("Najprije kliknite 'Izračunaj' kako biste generirali PDF.");
+                return;
+            }
+
+
+            this.querySelectorAll('.dynamic-field').forEach(el => el.remove());
+
+            document.querySelectorAll('[name^="BrojZidovaLista"]').forEach(input => {
+                const sakriveno = document.createElement('input');
+                sakriveno.type = 'hidden';
+                sakriveno.name = input.name;
+                sakriveno.value = input.value;
+                sakriveno.classList.add('dynamic-field');
+                this.appendChild(sakriveno);
+            });
+
+            document.querySelectorAll('[name^="DodatniTroskovi"]').forEach(input => {
+                const sakriveno = document.createElement('input');
+                sakriveno.type = 'hidden';
+                sakriveno.name = input.name;
+                sakriveno.value = input.value;
+                sakriveno.classList.add('dynamic-field');
+                this.appendChild(sakriveno);
+            });
+        });
+    </script>
+}

@@ -1,0 +1,72 @@
+﻿@{
+    ViewData["Title"] = "Početna stranica";
+    var isLoggedIn = User.Identity.IsAuthenticated;
+}
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+        <h1 class="display-4">Dobrodošli na građevinski kalkulator</h1>
+        <p class="lead">Jednostavno izračunajte cijenu fasaderskih radova, pregledajte dostupnu opremu i kontaktirajte izvođače.</p>
+        <a class="btn btn-primary btn-lg" asp-controller="Kalkulator" asp-action="Index">Pokreni kalkulator</a>
+    </div>
+    @if (User.Identity.IsAuthenticated)
+    {
+        var username = User.Identity.Name;
+        <div class="alert alert-success mt-4 text-center">
+            <h4>Dobrodošao natrag, @username!</h4>
+            <p>Spremni za novi izračun ili pregled opreme?</p>
+            <a class="btn btn-outline-primary" asp-controller="Kalkulator" asp-action="Index">Pokreni novi izračun</a>
+        </div>
+    }
+
+
+    <div class="row text-center">
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Kalkulator</h5>
+                    <p class="card-text">Unesite dimenzije i materijal i izračunajte cijenu fasade.</p>
+                    <a class="btn btn-outline-primary" asp-controller="Kalkulator" asp-action="Index">Izračunaj</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Najam opreme</h5>
+                    <p class="card-text">Pregledajte dostupnu opremu (skela, kombi, alati).</p>
+                    <a class="btn btn-outline-primary" asp-controller="Home" asp-action="Index">Pregledaj</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Pošalji upit</h5>
+                    <p class="card-text">Kontaktirajte pružatelja usluga za dodatne informacije.</p>
+                    <a class="btn btn-outline-primary" asp-controller="Usluge" asp-action="Index">Kontaktiraj</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Rezerviraj termin</h5>
+                    <p class="card-text">Pogledajte slobodne termine za izvođenje radova.</p>
+                    <a class="btn btn-outline-primary" asp-controller="Home" asp-action="Index">Rezerviraj</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (!isLoggedIn)
+    {
+        <div class="text-center mt-5">
+            <h4>Još nemate račun?</h4>
+            <p>Registrirajte se kao kupac ili pružatelj usluga i iskoristite sve funkcionalnosti.</p>
+            <a class="btn btn-success" asp-controller="Account" asp-action="Register">Registriraj se</a>
+        </div>
+    }
+
+</div>

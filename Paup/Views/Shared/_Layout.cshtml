@@ -1,0 +1,93 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<AppKorisnik> SignInManager
+@inject UserManager<AppKorisnik> UserManager
+
+@{
+    var korisnik = SignInManager.IsSignedIn(User) ? await UserManager.GetUserAsync(User) : null;
+    var role = korisnik?.Uloga;
+}
+
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Main Page</title>
+    
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Paup.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/HammerIcon.png" alt="Logo" style="height: 40px;" />
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse d-flex flex-grow-1 justify-content-center" id="mainNavbar">
+                    <ul class="navbar-nav gap-xxl-5">
+                        @if (role == "Korisnik" || string.IsNullOrEmpty(role))
+                        {
+                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Početna stranica</a></li>
+                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Kalkulator" asp-action="Index">Građevinski kalkulator</a></li>
+                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Usluge" asp-action="Index">Usluge</a></li>
+                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Oprema" asp-action="Popis">Najam opreme</a></li>
+                        }
+                        else if (role == "PružateljUsluga")
+                        {
+                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Početna stranica</a></li>
+                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Kalkulator" asp-action="Index">Izračun ponude</a></li>
+                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Usluge" asp-action="Index">Upiti korisnika</a></li>
+                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Oprema" asp-action="MojeOpreme">Upravljanje najmom</a></li>
+                        }
+                    </ul>
+                </div>
+
+                <ul class="navbar-nav">
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="profileDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                👤 @korisnik?.UserName
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" asp-controller="Account" asp-action="Detalji">Moj profil</a></li>
+                                <li>
+                                    <form asp-controller="Account" asp-action="Logout" method="post" class="dropdown-item m-0 p-0">
+                                        <button type="submit" class="btn btn-link dropdown-item text-start">Odjava</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Prijava</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    
+</body>
+</html>

@@ -1,0 +1,131 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = Paup
+build_property.RootNamespace = Paup
+build_property.ProjectDir = /Users/viktorkelner/PAUP/Paup/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = /Users/viktorkelner/PAUP/Paup
+build_property._RazorSourceGeneratorDebug = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Account/Detalji.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9EZXRhbGppLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Account/EmailPotvrden.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9FbWFpbFBvdHZyZGVuLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9Mb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Account/PotvrdaEmail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9Qb3R2cmRhRW1haWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Account/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9SZWdpc3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Account/UrediZupanije.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9VcmVkaVp1cGFuaWplLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Qcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Kalkulator/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvS2Fsa3VsYXRvci9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Kalkulator/ZidoviForm.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvS2Fsa3VsYXRvci9aaWRvdmlGb3JtLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Oprema/Dodaj.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvT3ByZW1hL0RvZGFqLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Oprema/MojeOpreme.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvT3ByZW1hL01vamVPcHJlbWUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Oprema/Popis.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvT3ByZW1hL1BvcGlzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Oprema/RedirectView.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvT3ByZW1hL1JlZGlyZWN0Vmlldy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL0Vycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Usluge/Lista.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNsdWdlL0xpc3RhLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Usluge/MojiUpiti.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNsdWdlL01vamlVcGl0aS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Usluge/PrihvaceniUpiti.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNsdWdlL1ByaWh2YWNlbmlVcGl0aS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Usluge/Prijava.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNsdWdlL1ByaWphdmEuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Usluge/Profil.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNsdWdlL1Byb2ZpbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Usluge/RedirectView.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNsdWdlL1JlZGlyZWN0Vmlldy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Usluge/Upiti.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNsdWdlL1VwaXRpLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/viktorkelner/PAUP/Paup/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-l4ulg8oqsu

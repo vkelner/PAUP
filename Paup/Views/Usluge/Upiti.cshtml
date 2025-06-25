@@ -1,0 +1,138 @@
+@model List<Paup.Models.Upit>
+
+<h2>Upiti od korisnika</h2>
+
+
+@if (User.IsInRole("PružateljUsluga"))
+{
+    <div class="mb-3">
+        <a class="btn btn-outline-secondary" asp-action="PrihvaceniUpiti">
+            Prihvaćeni upiti
+        </a>
+    </div>
+}
+@if (!Model.Any())
+ {
+     <p>Nema novih upita.</p>
+ }
+
+else
+{
+    foreach (var upit in Model)
+    {
+        var collapseId = $"odbijForm{upit.Id}";
+        var prihvatiId = $"prihvatiForm{upit.Id}";
+
+        <div class="card p-3 mb-3">
+            <p><strong>Ime i prezime:</strong> @upit.ImePrezime</p>
+            <p><strong>Adresa:</strong> @upit.Adresa</p>
+            <p><strong>Telefon:</strong> @upit.Telefon</p>
+            <p><strong>Grad:</strong> @upit.Grad</p>
+            <p><strong>Poruka:</strong> @upit.Poruka</p>
+            <p><small>Vrijeme slanja upita: @upit.Vrijeme.ToString("g")</small></p>
+            <p><small><strong>Datum rezervacije:</strong> @(upit.DatumRezervacije?.ToString("dd.MM.yyyy") ?? "Nije odabran")</small></p>
+
+            @if (!upit.Odbijen)
+            {
+                <button class="btn btn-success btn-sm me-2" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#@prihvatiId">
+                    Prihvati posao
+                </button>
+
+                <button class="btn btn-warning btn-sm mt-1" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#@collapseId">
+                    Odbij upit
+                </button>
+
+                <div class="collapse mt-3" id="@prihvatiId">
+                    <form method="post" asp-action="PrihvatiUpit">
+                        <input type="hidden" name="id" value="@upit.Id" />
+
+                        <div class="form-group mb-2">
+                            <label>Koliko će posao trajati (u danima)?</label>
+                            <input type="number" name="trajanjeDana" class="form-control" min="1" max="90" required />                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-sm">Potvrdi prihvaćanje</button>
+                    </form>
+                </div>
+
+                <div class="collapse mt-3" id="@collapseId">
+                    <form asp-action="OdbijUpit" method="post" onsubmit="return validacijaCustomPolja(this)">
+                        <input type="hidden" name="id" value="@upit.Id" />
+
+                        <div class="form-group mb-2">
+                            <label>Zašto odbijate upit?</label>
+                            <select name="razlog" class="form-select" required onchange="poljeDrugo(this)">
+                                <option value="">-- Odaberite razlog --</option>
+                                <option value="Više ne radim u tom području">Više ne radim u tom području</option>
+                                <option value="Nemam vremena">Nemam vremena</option>
+                                <option value="Drugo">Drugo (upišite ispod)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group mb-2" style="display: none;" id="customReasonGroup">
+                            <input type="text" name="dodatniRazlog" class="form-control" maxlength="100" placeholder="Unesite razlog" />
+                        </div>
+
+                        <button type="submit" class="btn btn-danger btn-sm">Potvrdi</button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-secondary mt-3 mb-0">
+                    <strong>Odbijeno:</strong> @upit.OdbijenRazlog
+                </div>
+            }
+        </div>
+    }
+}
+
+@section Scripts {
+    <script>
+        function poljeDrugo(select) {
+            const form = select.closest('form');
+            const customField = form.querySelector('#customReasonGroup');
+            const input = customField.querySelector('input');
+
+            if (select.value === 'Drugo') {
+                customField.style.display = 'block';
+            } else {
+                customField.style.display = 'none';
+                input.value = '';
+                UkloniError(input);
+            }
+        }
+
+        function validacijaCustomPolja(form) {
+            const select = form.querySelector('select[name="razlog"]');
+            const input = form.querySelector('input[name="dodatniRazlog"]');
+
+            if (select.value === 'Drugo' && !input.value.trim()) {
+                prikazError(input, "Molimo unesite razlog.");
+                return false;
+            }
+
+            UkloniError(input);
+            return true;
+        }
+
+        function prikazError(input, message) {
+            UkloniError(input);
+            const error = document.createElement("div");
+            error.className = "text-danger mt-1";
+            error.textContent = message;
+            error.setAttribute("data-error", "true");
+            input.parentNode.appendChild(error);
+        }
+
+        function UkloniError(input) {
+            const existing = input.parentNode.querySelector('[data-error]');
+            if (existing) {
+                existing.remove();
+            }
+        }
+    </script>
+}
+
+
