@@ -14,11 +14,13 @@ public class Oprema
 
     [Required(ErrorMessage = "Ime je obavezno.")]
     [StringLength(30, ErrorMessage = "Ime može imati najviše 30 znakova.")]
+    [RegularExpression(@"\S+", ErrorMessage = "Naslov ne može sadržavati samo razmake.")]
     [DisplayName("Naslov")]
     public string Ime { get; set; }
     
     [Required(ErrorMessage = "Opis je obavezan.")]
     [StringLength(200, ErrorMessage = "Opis može imati najviše 200 znakova.")]
+    [RegularExpression(@"\S+", ErrorMessage = "Opis ne može sadržavati samo razmake.")]
     public string Opis { get; set; }
 
     [Required(ErrorMessage = "Kolicina je obavezna.")]
@@ -34,7 +36,7 @@ public class Oprema
     public decimal Cijena { get; set; }
     public NajamTip? NajamPo { get; set; }
     
-    public decimal? CijenaNajma { get; set; }
+    public decimal CijenaNajma { get; set; }
 
     [BindNever]
     public string? PruzateljUslugeId { get; set; }

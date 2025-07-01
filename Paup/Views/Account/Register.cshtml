@@ -69,6 +69,7 @@
 </form>
 
 @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const radios = document.querySelectorAll("input[name='OdabranaUloga']");
@@ -94,6 +95,18 @@
             });
 
             toggleZupanije();
+        });
+
+
+        $.validator.addMethod("notOnlySpaces", function (value, element) {
+            return this.optional(element) || $.trim(value).length > 0;
+        }, "Polje ne smije sadržavati samo razmake.");
+
+        $(function () {
+
+            $('input[name="UserName"]').rules("add", { notOnlySpaces: true });
+            $('input[name="Email"]').rules("add", { notOnlySpaces: true });
+            $('input[name="KontaktBroj"]').rules("add", { notOnlySpaces: true });
         });
     </script>
 

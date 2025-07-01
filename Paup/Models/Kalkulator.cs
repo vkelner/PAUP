@@ -11,7 +11,8 @@ namespace Paup.Models
         [Display(Name = "Debljina")]
         [Required(ErrorMessage = "Unesite debljinu izolacije.")]
         [Range(2, 25, ErrorMessage = "Debljina mora biti između 2 i 25 cm.")]
-        public double Debljina { get; set; }
+        [RegularExpression(@"^\d+$", ErrorMessage = "Unesi cijeli broj.")]
+        public int Debljina { get; set; }
         
         
         [Display(Name = "Broj zidova")]
@@ -27,8 +28,8 @@ namespace Paup.Models
         public double CijenaPoM2 =>
             VrstaMaterijala switch
             {
-                VrstaMaterijala.EPS => Math.Round(2 * Debljina, 2),
-                VrstaMaterijala.Stiropor => Math.Round(1 * Debljina, 2),
+                VrstaMaterijala.EPS => Math.Round(2.0 * Debljina, 2),
+                VrstaMaterijala.Stiropor => Math.Round(1.0 * Debljina, 2),
                 VrstaMaterijala.StaklenaVuna => Math.Round(1.5 * Debljina, 2),
                 VrstaMaterijala.KamenaVuna => Math.Round(1.5 * Debljina, 2),
                 _ => 0

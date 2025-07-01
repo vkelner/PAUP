@@ -16,6 +16,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection"),
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
 
+builder.Services.AddControllersWithViews()
+    .AddViewOptions(options =>
+    {
+        options.HtmlHelperOptions.ClientValidationEnabled = true;
+    });
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddIdentity<AppKorisnik, IdentityRole>()
@@ -25,6 +31,12 @@ builder.Services.AddIdentity<AppKorisnik, IdentityRole>()
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.User.RequireUniqueEmail = true;
+    
+    options.User.AllowedUserNameCharacters =
+        "abcdefghijklmnopqrstuvwxyz"  +
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"  +
+        "0123456789-._@+" +
+        "čćžšđČĆŽŠĐ";
 });
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -66,5 +78,6 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
 app.Run();

@@ -14,7 +14,7 @@
 
     <div class="form-group">
         <label asp-for="Opis"></label>
-        <textarea asp-for="Opis" class="form-control"></textarea>
+        <textarea asp-for="Opis" id="Opis" class="form-control"></textarea>
         <span asp-validation-for="Opis" class="text-danger"></span>
     </div>
 
@@ -42,7 +42,7 @@
 
     <div class="form-group">
         <label asp-for="Cijena">Cijena</label>
-        <input asp-for="Cijena" type="text" class="form-control" />
+        <input id="Cijena" asp-for="Cijena" type="text" class="form-control" />
         <span asp-validation-for="Cijena" class="text-danger"></span>
     </div>
 
@@ -52,9 +52,7 @@
 </form>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/localization/messages_hr.min.js"></script>>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/localization/messages_hr.min.js"></script>
 
     <script>
         const ponudaSelect = document.getElementById("VrstaPonude");
@@ -76,6 +74,23 @@
             if (!form.valid()) {
                 e.preventDefault();
             }
+        });
+
+        $.validator.addMethod("notOnlySpaces", function(value, element) {
+            return value.trim().length > 0;
+        }, "Polje ne smije sadržavati samo razmake.");
+
+        $(document).ready(function () {
+            $("#Opis").rules("add", { notOnlySpaces: true });
+        });
+
+        $.validator.addMethod("notOnlySpaces", function (value, element) {
+            return this.optional(element) || $.trim(value).length > 0;
+        }, "Polje ne smije sadržavati samo razmake.");
+
+        $(function () {
+            $('#oprema-form input[name="Ime"]').rules("add", { notOnlySpaces: true });
+            $('#oprema-form textarea[name="Opis"]').rules("add", { notOnlySpaces: true });
         });
     </script>
 }

@@ -48,7 +48,7 @@ else
                         <label class="form-label">Ime i prezime</label>
                         <input type="text" name="imePrezime" class="form-control"
                                required maxlength="40"
-                               pattern="^[a-zA-ZčćžšđČĆŽŠĐ\s]{1,40}$"
+                               pattern="^(?=.*\S)[a-zA-ZčćžšđČĆŽŠĐ\s]{1,40}$"
                                oninvalid="provjeraPolja(this, 'Polje ne smije sadržavati brojeve.')"
                                oninput="ocistiGresku(this)" />
                         <div class="invalid-feedback"></div>
@@ -58,7 +58,7 @@ else
                         <label class="form-label">Telefon</label>
                         <input type="tel" name="Telefon" class="form-control"
                                required maxlength="20"
-                               pattern="^\+?[0-9\s\-()]{6,20}$"
+                               pattern="^(?=.*\S)[a-zA-ZčćžšđČĆŽŠĐ\s]{1,40}$"
                                onkeypress="return /^[0-9+\-() ]$/.test(event.key)"
                                oninvalid="provjeraPolja(this, 'Unesite ispravan broj telefona.')"
                                oninput="ocistiGresku(this)" />
@@ -69,6 +69,7 @@ else
                         <label class="form-label">Adresa</label>
                         <input type="text" name="adresa" class="form-control"
                                required maxlength="40"
+                               pattern="^(?=.*\S)[a-zA-ZčćžšđČĆŽŠĐ\s]{1,40}$"
                                oninvalid="provjeraPolja(this, 'Unesite ispravnu adresu.')"
                                oninput="ocistiGresku(this)" />
                         <div class="invalid-feedback"></div>
@@ -78,7 +79,7 @@ else
                         <label class="form-label">Grad</label>
                         <input type="text" name="grad" class="form-control"
                                required maxlength="30"
-                               pattern="^[a-zA-ZčćžšđČĆŽŠĐ\s]{1,30}$"
+                               pattern="^(?=.*\S)[a-zA-ZčćžšđČĆŽŠĐ\s]{1,40}$"
                                oninvalid="provjeraPolja(this, 'Polje ne smije sadržavati brojeve.')"
                                oninput="ocistiGresku(this)" />
                         <div class="invalid-feedback"></div>
@@ -86,8 +87,11 @@ else
 
                     <div class="mb-3">
                         <label class="form-label">Opis radova</label>
-                        <textarea name="poruka" class="form-control" rows="3"
-                                  required maxlength="300"
+                        <textarea name="poruka" class="form-control"
+                                  rows="3" maxlength="300"
+                                  required
+                                  data-val="true"
+                                  data-val-required="Unesite opis radova (maks. 300 znakova)."
                                   oninvalid="provjeraPolja(this, 'Unesite opis radova (maks. 300 znakova).')"
                                   oninput="ocistiGresku(this)"></textarea>
                         <div class="invalid-feedback"></div>
@@ -132,6 +136,9 @@ else
             }
 }
 
+        
+        
+
         function ocistiGresku(input) {
             input.setCustomValidity('');
             const errorDiv = input.parentElement.querySelector('.invalid-feedback');
@@ -151,6 +158,7 @@ else
                 }, false);
             });
         })();
+        
     </script>
 }
 

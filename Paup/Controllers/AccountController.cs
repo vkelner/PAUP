@@ -30,70 +30,71 @@ namespace Paup.Controllers
         public IActionResult Register() => View();
         
         [HttpPost]
-public async Task<IActionResult> Register(RegisterView model)
+        public async Task<IActionResult> Register(RegisterView model)
 {
-    try
-    {
-        if (model.OdabranaUloga == VrstaKorisnika.Korisnik && model.Zupanija == null)
-            ModelState.AddModelError("Zupanija", "Županija je obavezna za korisnika.");
+            try
+            {
+                if (model.OdabranaUloga == VrstaKorisnika.Korisnik && model.Zupanija == null)
+                    ModelState.AddModelError("Zupanija", "Županija je obavezna za korisnika.");
 
-        if (model.OdabranaUloga == VrstaKorisnika.PružateljUsluga &&
-            (model.Zupanije == null || !model.Zupanije.Any()))
-            ModelState.AddModelError("Zupanije", "Odaberite barem jednu županiju.");
+                if (model.OdabranaUloga == VrstaKorisnika.PružateljUsluga &&
+                    (model.Zupanije == null || !model.Zupanije.Any()))
+                    ModelState.AddModelError("Zupanije", "Odaberite barem jednu županiju.");
 
-        if (!ModelState.IsValid)
-            return View(model);
+                if (await _userManager.FindByNameAsync(model.UserName) is not null)
+                    ModelState.AddModelError(nameof(model.UserName), "Ime se već koristi.");
 
-        var user = new AppKorisnik
-        {
-            UserName     = model.UserName,
-            Email        = model.Email,
-            KontaktBroj  = model.KontaktBroj,
-            Uloga        = model.OdabranaUloga.ToString(),
-            Zupanije     = model.OdabranaUloga == VrstaKorisnika.Korisnik
-                           ? model.Zupanija?.ToString()
-                           : string.Join(",", model.Zupanije.Select(z => z.ToString()))
-        };
+                if (await _userManager.FindByEmailAsync(model.Email) is not null)
+                    ModelState.AddModelError(nameof(model.Email), "Email se već koristi.");
 
-        var rezultat = await _userManager.CreateAsync(user, model.Password);
+                if (!ModelState.IsValid)
+                    return View(model);
 
-        if (rezultat.Succeeded)
-        {
-            var uloga = model.OdabranaUloga.ToString();
+                var user = new AppKorisnik
+                {
+                    UserName    = model.UserName,
+                    Email       = model.Email,
+                    KontaktBroj = model.KontaktBroj,
+                    Uloga       = model.OdabranaUloga.ToString(),
+                    Zupanije    = model.OdabranaUloga == VrstaKorisnika.Korisnik
+                                  ? model.Zupanija?.ToString()
+                                  : string.Join(',', model.Zupanije.Select(z => z.ToString()))
+                };
 
-            if (!await _roleManager.RoleExistsAsync(uloga))
-                await _roleManager.CreateAsync(new IdentityRole(uloga));
+                var rezultat = await _userManager.CreateAsync(user, model.Password);
 
-            await _userManager.AddToRoleAsync(user, uloga);
+                if (rezultat.Succeeded)
+                {
+                    var uloga = model.OdabranaUloga.ToString();
 
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var linkPotvrde = Url.Action(
-                "EmailPotvrda", "Account",
-                new { userId = user.Id, token },
-                Request.Scheme);
+                    if (!await _roleManager.RoleExistsAsync(uloga))
+                        await _roleManager.CreateAsync(new IdentityRole(uloga));
 
-            Console.WriteLine("Confirmation link: " + linkPotvrde);
+                    await _userManager.AddToRoleAsync(user, uloga);
 
-            return RedirectToAction("PotvrdaEmail");
-        }
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var linkPotvrde = Url.Action("EmailPotvrda", "Account", new { userId = user.Id, token }, Request.Scheme);
+                    Console.WriteLine("Confirmation link: " + linkPotvrde);
 
-        foreach (var error in rezultat.Errors)
-            ModelState.AddModelError(string.Empty, error.Description);
+                    return RedirectToAction("PotvrdaEmail");
+                }
 
-        return View(model);
-    }
-    catch (Exception ex)
-    {
-        Console.Error.WriteLine($"[Register] Greška: {ex.Message}\n{ex.StackTrace}");
+                foreach (var error in rezultat.Errors)
+                    ModelState.AddModelError(string.Empty, error.Description);
 
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"[Register] Greška: {ex.Message}\n{ex.StackTrace}");
 
-        ModelState.AddModelError(
-            string.Empty,
-            "Dogodila se neočekivana pogreška prilikom registracije. Pokušajte ponovno ili kontaktirajte podršku.");
+                ModelState.AddModelError(string.Empty,
+                    "Dogodila se neočekivana pogreška prilikom registracije. Pokušajte ponovno ili kontaktirajte podršku.");
 
-        return View(model);
-    }
+                return View(model);
+            }
 }
+
 
 
         [HttpGet]
@@ -108,21 +109,21 @@ public async Task<IActionResult> Register(RegisterView model)
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                ModelState.AddModelError("", "Korisnik ne postoji.");
+                ModelState.AddModelError(nameof(model.Email), "Korisnik ne postoji.");
                 return View(model);
             }
 
             if (!await _userManager.IsEmailConfirmedAsync(user))
             {
-                ModelState.AddModelError("", "Email nije potvrđen.");
+                ModelState.AddModelError(nameof(model.Email), "Email nije potvrđen.");
                 return View(model);
             }
 
-            var rezultat = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, false, false);
-            if (rezultat.Succeeded)
+            var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, false, false);
+            if (result.Succeeded)
                 return RedirectToAction("Index", "Home");
 
-            ModelState.AddModelError("", "Pogrešan email ili lozinka.");
+            ModelState.AddModelError(string.Empty, "Pogrešan email ili lozinka.");
             return View(model);
         }
 

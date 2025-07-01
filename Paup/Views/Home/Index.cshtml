@@ -16,7 +16,7 @@
     {
         var username = User.Identity.Name;
         <div class="alert alert-success mt-4 text-center">
-            <h4>Dobrodošao natrag, @username!</h4>
+            <h4>Dobrodošao, @username!</h4>
         </div>
     }
 
@@ -29,7 +29,7 @@
                     <p class="card-text">@(isPruzatelj
                             ? "Brzi izračun ponude."
                             : "Brza aproksimacija fasadnih poslova.")</p>
-                    <a class="btn btn-outline-primary" asp-controller="Usluge" asp-action="Index">@(isPruzatelj
+                    <a class="btn btn-outline-primary" asp-controller="Kalkulator" asp-action="Index">@(isPruzatelj
                             ? "Nova ponuda"
                             : "Više")</a>
                 </div>
@@ -42,7 +42,7 @@
                     <p class="card-text">@(isPruzatelj
                             ? "Pregledajte svoju opremu za najam."
                             : "Unajmite opremu već danas.")</p>
-                    <a class="btn btn-outline-primary" asp-controller="Usluge" asp-action="Index">@(isPruzatelj
+                    <a class="btn btn-outline-primary" asp-controller="Oprema" asp-action="MojeOpreme">@(isPruzatelj
                             ? "Više"
                             : "Pregledaj")</a>
                 </div>

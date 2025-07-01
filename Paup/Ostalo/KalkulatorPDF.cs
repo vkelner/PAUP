@@ -6,62 +6,86 @@ using Paup.Models;
 namespace Paup.Ostalo;
 
 public class KalkulatorPDF
+{
+    public byte[] Generate(Kalkulator model)
     {
-        public byte[] Generate(Kalkulator model)
+        return Document.Create(container =>
         {
-            return Document.Create(container =>
+            container.Page(page =>
             {
-                container.Page(page =>
+                page.Margin(40);
+                page.Size(PageSizes.A4);
+                page.DefaultTextStyle(x => x.FontSize(12));
+
+                page.Header()
+                    .Text("Kalkulacija fasade")
+                    .FontSize(22)
+                    .Bold()
+                    .AlignCenter();
+
+                page.Content().Column(col =>
                 {
-                    page.Margin(40);
-                    page.Size(PageSizes.A4);
-                    page.DefaultTextStyle(x => x.FontSize(12));
+                    col.Spacing(15);
 
-                    page.Header()
-                        .Text("Kalkulacija fasade")
-                        .FontSize(20)
-                        .Bold()
-                        .AlignCenter();
-
-                    page.Content().Column(col =>
+                    col.Item().BorderBottom(1).PaddingBottom(10).Column(info =>
                     {
-                        col.Spacing(10);
-
-                        col.Item().Text($"Materijal: {model.VrstaMaterijala}");
-                        col.Item().Text($"Debljina izolacije: {model.Debljina} cm");
-                        col.Item().Text($"Ukupna površina: {model.UkupnaPovrsina} m²");
-                        col.Item().Text($"Cijena po m²: {model.CijenaUkupnoPoM2} €");
-                        col.Item().Text($"Ukupna cijena: {model.UkupnaCijena} €");
-
-                        col.Item().Text("Zidovi:").Bold();
-                        for (int i = 0; i < model.BrojZidovaLista.Count; i++)
-                        {
-                            var zid = model.BrojZidovaLista[i];
-                            col.Item().Text($"  • Zid {i + 1}: {zid.Visina} m × {zid.Sirina} m");
-
-                            if (zid.Praznine != null && zid.Praznine.Any())
-                            {
-                                foreach (var praznina in zid.Praznine)
-                                {
-                                    col.Item().Text($"     - Praznina ({praznina.Tip}): {praznina.Visina} m × {praznina.Sirina} m");
-                                }
-                            }
-                        }
-
-                        if (model.DodatniTroskovi.Any())
-                        {
-                            col.Item().Text("Dodatni troškovi:").Bold();
-                            foreach (var trosak in model.DodatniTroskovi)
-                            {
-                                col.Item().Text($"  • {trosak.Naslov}: {trosak.Opis} - {trosak.Cijena} €");
-                            }
-                        }
+                        info.Spacing(5);
+                        info.Item().AlignCenter().Text($"Materijal: {model.VrstaMaterijala}");
+                        info.Item().AlignCenter().Text($"Debljina izolacije: {model.Debljina} cm");
+                        info.Item().AlignCenter().Text($"Ukupna površina: {model.UkupnaPovrsina} m²");
+                        info.Item().AlignCenter().Text($"Cijena po m²: {model.CijenaUkupnoPoM2} €");
+                        info.Item().AlignCenter().Text($"Ukupna cijena: {model.UkupnaCijena} €");
                     });
 
-                    page.Footer()
-                        .AlignCenter()
-                        .Text($"Generirano: {DateTime.Now:dd.MM.yyyy HH:mm}");
+                    col.Item().PaddingTop(10).Text("Zidovi").Bold().FontSize(14).Underline();
+                    for (int i = 0; i < model.BrojZidovaLista.Count; i++)
+                    {
+                        var zid = model.BrojZidovaLista[i];
+                        col.Item().Text($"Zid {i + 1}: {zid.Visina} m × {zid.Sirina} m").SemiBold();
+
+                        if (zid.Praznine != null && zid.Praznine.Any())
+                        {
+                            foreach (var praznina in zid.Praznine)
+                            {
+                                col.Item().PaddingLeft(20).Text($"- Praznina ({praznina.Tip}): {praznina.Visina} m × {praznina.Sirina} m");
+                            }
+                        }
+                    }
+
+                    if (model.DodatniTroskovi.Any())
+                    {
+                        col.Item().PaddingTop(10).Text("Dodatni troškovi").Bold().FontSize(14).Underline();
+
+                        foreach (var trosak in model.DodatniTroskovi)
+                        {
+                            col.Item().Text($"• {trosak.Naslov}: {trosak.Opis} - {trosak.Cijena} €");
+                        }
+                    }
+
+                    col.Item().PaddingTop(30).Row(row =>
+                    {
+                        row.RelativeItem().Column(sig =>
+                        {
+                            sig.Item().BorderBottom(1).Height(1);
+                            sig.Item().AlignCenter().Text("Potpis korisnika").FontSize(10).Italic();
+                        });
+
+                        row.ConstantItem(50);
+
+                        row.RelativeItem().Column(sig =>
+                        {
+                            sig.Item().BorderBottom(1).Height(1);
+                            sig.Item().AlignCenter().Text("Potpis izvođača").FontSize(10).Italic();
+                        });
+                    });
                 });
-            }).GeneratePdf();
-        }
+
+                page.Footer()
+                    .AlignCenter()
+                    .Text($"Generirano: {DateTime.Now:dd.MM.yyyy HH:mm}")
+                    .FontSize(10)
+                    .Italic();
+            });
+        }).GeneratePdf();
     }
+}

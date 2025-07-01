@@ -4,7 +4,7 @@ namespace Paup.Enum
 {
     public enum VrstaMaterijala
     {
-        [Display(Name = "XPS")]
+        [Display(Name = "EPS")]
         EPS,
 
         [Display(Name = "Stiropor")]

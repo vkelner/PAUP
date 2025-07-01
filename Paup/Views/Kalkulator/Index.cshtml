@@ -13,6 +13,9 @@
         <div class="col-md-8">
             <h2 class="text-center mb-4">Kalkulator fasade</h2>
             <p class="text-center mb-4">Prikazana cijena je aproksimacija i može varirati ovisno o stvarnim uvjetima i dodatnim troškovima. Za točnu ponudu, molimo kontaktirajte stručnjaka ili izvođača radova.</p>
+            <div class="alert alert-warning" role="alert">
+                <strong>Napomena:</strong> Za unos decimalnih brojeva koristite <code>.</code> (točka), a ne <code>,</code> (zarez).
+            </div>
 
             <form asp-action="Index" method="post" id="kalkulatorForm" novalidate>
                 @Html.AntiForgeryToken()
@@ -26,102 +29,157 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Debljina (cm):</label>
+                    <label class="form-label">Debljina(cm):</label>
                     <input id="Debljina"
                            asp-for="Debljina"
-                           type="number" step="0.1" min="2" max="25"
+                           type="number"
+                           min="2" max="25" step="1"
+                           placeholder="Unesite cijeli broj od 2 do 25."
                            class="form-control"
-                           placeholder="Unesite broj."
                            value=""
-                           />
+                           required />
+
+
                     <span id="debljinaGreska" class="text-danger"></span>
                 </div>
 
+
                 <div class="mb-3">
                     <label class="form-label">Broj zidova:</label>
-                    <input asp-for="BrojZidova" id="brojZidova" type="number" min="1" max="40" step="1"
-                           class="form-control"
-                           placeholder="Unesite broj."
+                    <input asp-for="BrojZidova" id="brojZidova" min="1" max="40"
+                           class="form-control" type="number"
+                           placeholder="Unesi broj od 1 do 40."
                            value=""
                            />
                     <span id="brojZidovaGreska" class="text-danger"></span>
 
                 </div>
 
-                <button type="button" id="dodajZidoveBtn" class="btn btn-secondary mb-3" onclick="dodajZidove()" disabled>
+                <button type="button" id="dodajZidoveBtn" class="btn btn-secondary mb-3" onclick="dodajZidove()">
                     Dodaj zidove
                 </button>
 
 
                 <div id="zidoviContainer">
-                </div>
-                
-                @if (isPruzatelj)
-                {
-                    <hr class="my-4" />
-                    <h4>Dodatni troškovi</h4>
-
-                    <div id="dodatniTroskoviContainer">
-                        @for (int i = 0; i < Model.DodatniTroskovi.Count; i++)
+                    @if (Model.BrojZidovaLista != null)
+                    {
+                        for (int i = 0; i < Model.BrojZidovaLista.Count; i++)
                         {
-                            var naslovName = $"DodatniTroskovi[{i}].Naslov";
-                            var opisName = $"DodatniTroskovi[{i}].Opis";
-                            var cijenaName = $"DodatniTroskovi[{i}].Cijena";
-                            var trosak = Model.DodatniTroskovi[i];
+                            var zid = Model.BrojZidovaLista[i];
 
-                            <div class="border p-2 mb-3">
-                                <h5>Dodatni trošak @(i + 1)</h5>
+                            <div class="border p-2 my-2">
+                                <h5>Zid @(i + 1)</h5>
 
-                                <label>Naslov:</label>
-                                <input name="@naslovName"
-                                       value="@trosak.Naslov"
-                                       class="form-control"
-                                       maxlength="50"
-                                       required />
-                                <span class="text-danger" data-valmsg-for="@naslovName" data-valmsg-replace="true"></span>
+                                <p class="mb-1"><strong>Visina:</strong> @zid.Visina&nbsp;m</p>
+                                <p><strong>Širina:</strong> @zid.Sirina&nbsp;m</p>
 
-                                <label>Opis:</label>
-                                <textarea name="@opisName"
-                  class="form-control"
-                  maxlength="200"
-                  required>@trosak.Opis</textarea>
-                                <span class="text-danger" data-valmsg-for="@opisName" data-valmsg-replace="true"></span>
+                                @if (zid.Praznine?.Any() == true)
+                                {
+                                    <ul class="list-group list-group-flush">
+                                        @for (int j = 0; j < zid.Praznine.Count; j++)
+                                        {
+                                            var p = zid.Praznine[j];
+                                            <li class="list-group-item">
+                                                <strong>@p.Tip</strong> –
+                                                visina @p.Visina&nbsp;m × širina @p.Sirina&nbsp;m
+                                            </li>
 
-                                <label>Cijena (€):</label>
-                                <input name="@cijenaName"
-                                       value="@trosak.Cijena"
-                                       type="number"
-                                       step="0.01"
-                                       min="0"
-                                       max="10000"
-                                       class="form-control"
-                                       required />
-                                <span class="text-danger" data-valmsg-for="@cijenaName" data-valmsg-replace="true"></span>
+                                            <input type="hidden" name="BrojZidovaLista[@i].Praznine[@j].Tip"    value="@p.Tip"    />
+                                            <input type="hidden" name="BrojZidovaLista[@i].Praznine[@j].Visina" value="@p.Visina" />
+                                            <input type="hidden" name="BrojZidovaLista[@i].Praznine[@j].Sirina" value="@p.Sirina" />
+                                        }
+                                    </ul>
+                                }
+
+                                <input type="hidden" name="BrojZidovaLista[@i].Visina" value="@zid.Visina" />
+                                <input type="hidden" name="BrojZidovaLista[@i].Sirina" value="@zid.Sirina" />
                             </div>
                         }
-                    </div>
+                    }
+                </div>
 
 
-                    <button type="button" class="btn btn-outline-primary mb-3" onclick="dodajTrosak()">Dodaj trošak</button>
-                }
+                @if (isPruzatelj)
+{
+    <hr class="my-4" />
+    <h4>Dodatni troškovi</h4>
 
-
-                <button type="submit" class="btn btn-secondary mt-3 w-100" id="submitBtn" disabled>Izračunaj</button>
-            </form>
-
-            @if (isPruzatelj)
+    if (!(ViewBag.Calculated as bool? ?? false))
+    {
+        <div id="dodatniTroskoviContainer">
+            @for (int i = 0; i < Model.DodatniTroskovi.Count; i++)
             {
-                bool calcDone = ViewBag.Calculated as bool? ?? false;
-                var pdfBtnIskljucen = calcDone ? "" : "disabled";
+                var t = Model.DodatniTroskovi[i];
+                <div class="border p-2 mb-3 dodatni-trosak-blok">
+                    <h5>Dodatni trošak @(i + 1)</h5>
 
+                    <label>Naslov:</label>
+                    <input name="DodatniTroskovi[@i].Naslov"
+                           value="@t.Naslov"
+                           class="form-control"
+                           maxlength="50" required />
+                    <span class="text-danger" data-valmsg-for="DodatniTroskovi[@i].Naslov"></span>
+
+                    <label>Opis:</label>
+                    <textarea name="DodatniTroskovi[@i].Opis"
+                              class="form-control"
+                              maxlength="200" required>@t.Opis</textarea>
+                    <span class="text-danger" data-valmsg-for="DodatniTroskovi[@i].Opis"></span>
+
+                    <label>Cijena (€):</label>
+                    <input name="DodatniTroskovi[@i].Cijena"
+                           value="@t.Cijena"
+                           type="number" step="0.01" min="0" max="10000"
+                           class="form-control" required />
+                    <span class="text-danger" data-valmsg-for="DodatniTroskovi[@i].Cijena"></span>
+                </div>
+            }
+        </div>
+
+        <button type="button" class="btn btn-outline-primary mb-3"
+                onclick="dodajTrosak()" id="dodajTrosakBtn">
+            Dodaj trošak
+        </button>
+    }
+    else
+    {
+        <ul class="list-group mb-3">
+            @for (int i = 0; i < Model.DodatniTroskovi.Count; i++)
+            {
+                var t = Model.DodatniTroskovi[i];
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="me-auto">
+                        <div class="fw-bold">@t.Naslov</div>
+                        <small>@t.Opis</small>
+                    </div>
+                    <span>@t.Cijena €</span>
+
+                    <input type="hidden" name="DodatniTroskovi[@i].Naslov" value="@t.Naslov" />
+                    <input type="hidden" name="DodatniTroskovi[@i].Opis"   value="@t.Opis"   />
+                    <input type="hidden" name="DodatniTroskovi[@i].Cijena" value="@t.Cijena" />
+                </li>
+            }
+        </ul>
+    }
+}
+
+
+
+                <button type="submit" class="btn btn-secondary mt-3 w-100" id="submitBtn" style="display: none;">
+                    Izračunaj
+                </button>
+                </form>
+
+            @if (isPruzatelj && (ViewBag.Calculated as bool? ?? false))
+            {
                 <form asp-action="GenerirajPdf" method="post" id="pdfForm">
                     @Html.AntiForgeryToken()
 
                     <input type="hidden" name="VrstaMaterijala" value="@Model.VrstaMaterijala" />
-                    <input type="hidden" name="Debljina" value="@Model.Debljina" />
-                    <input type="hidden" name="BrojZidova" value="@Model.BrojZidova" />
+                    <input type="hidden" name="Debljina"        value="@Model.Debljina" />
+                    <input type="hidden" name="BrojZidova"      value="@Model.BrojZidova" />
 
-                    <button type="submit" class="btn btn-success w-100 mt-2" id="generatePdfBtn" @pdfBtnIskljucen>
+                    <button type="submit" class="btn btn-success w-100 mt-2" id="generatePdfBtn">
                         Generiraj PDF
                     </button>
                 </form>
@@ -134,7 +192,7 @@
                 <h3 class="text-center">Rezultat kalkulacije</h3>
                 <p><strong>Ukupna površina:</strong> @Model.UkupnaPovrsina m²</p>
                 <p><strong>Cijena po m²:</strong> @Model.CijenaUkupnoPoM2 €</p>
-                <p><strong>Ukupna cijena kompletne fasade:</strong> @Model.UkupnaCijena €</p>
+                <p><strong>Ukupna cijena:</strong> @Model.UkupnaCijena €</p>
             }
 
             <div id="formErrorMessage" class="text-danger text-center mb-2 d-none">
@@ -154,7 +212,7 @@
 
         document.getElementById('submitBtn').addEventListener('click', function () {
             izracunajClicked = true;
-            document.getElementById('generatePdfBtn').disabled = false;
+            //document.getElementById('generatePdfBtn').disabled = false;
         });
 
         
@@ -177,8 +235,33 @@
 
             document.addEventListener("input", validacijaForme);
         });
+        
+        function osvjeziLimitPraznina(zidIndex) {
+            const novaVisina = parseFloat(document.getElementById(`visinaZida_${zidIndex}`).value) || 0;
+            const novaSirina = parseFloat(document.getElementById(`sirinaZida_${zidIndex}`).value) || 0;
 
+            document
+                .querySelectorAll(`#praznineZida_${zidIndex} input[id^="prazninaVisina_${zidIndex}_"]`)
+                .forEach(inp => {
+                    inp.max = novaVisina;
+                    if (parseFloat(inp.value) > novaVisina) inp.value = "";
+                });
+
+            document
+                .querySelectorAll(`#praznineZida_${zidIndex} input[id^="prazninaSirina_${zidIndex}_"]`)
+                .forEach(inp => {
+                    inp.max = novaSirina;
+                    if (parseFloat(inp.value) > novaSirina) inp.value = "";
+                });
+        }
         function dodajZidove() {
+            const debljinaValid = validirajDebljinu();
+            const brojZidovaValid = validirajBrojZidova();
+
+            if (!debljinaValid || !brojZidovaValid) {
+                return;
+            }
+
             const maxZidova = 30;
             const brojInput = document.getElementById("brojZidova");
             const broj = parseInt(brojInput.value);
@@ -186,63 +269,107 @@
 
             if (isNaN(broj) || broj < 1 || broj > maxZidova) return;
 
+            document.getElementById("VrstaMaterijala").disabled = true;
+            document.getElementById("Debljina").readOnly        = true;
+            brojInput.readOnly                                  = true;
+
             container.innerHTML = "";
 
             for (let i = 0; i < broj; i++) {
                 const zidDiv = document.createElement("div");
                 zidDiv.className = "border p-2 my-2";
                 zidDiv.innerHTML = `
-                    <h5>Zid ${i + 1}</h5>
-                    <label>Visina(m):</label>
-                    <input name="BrojZidovaLista[${i}].Visina" type="number" step="0.01" min="0.5" max="100" required class="form-control" />
-                    <span class="field-validation-valid text-danger" data-valmsg-for="BrojZidovaLista[${i}].Visina" data-valmsg-replace="true"></span>
-                    <br>
-                    <label>Širina(m):</label>
-                    <input name="BrojZidovaLista[${i}].Sirina" type="number" step="0.01" min="0.5" max="100" required class="form-control" />
-                    <span class="field-validation-valid text-danger" data-valmsg-for="BrojZidovaLista[${i}].Sirina" data-valmsg-replace="true"></span>
-                    <br>
-                    <div id="praznineZida_${i}" class="mt-3"></div>
-                    <button type="button" class="btn btn-sm btn-outline-secondary mt-2" onclick="dodajPrazninu(${i})">Dodaj prazninu</button>
-                `;
+    <h5>Zid ${i + 1}</h5>
+    <label>Visina(m):</label>
+    <input id="visinaZida_${i}" name="BrojZidovaLista[${i}].Visina"
+           type="number" step="0.5" min="0.5" max="100" required
+           class="form-control" />
+    <span class="field-validation-valid text-danger" data-valmsg-for="BrojZidovaLista[${i}].Visina" data-valmsg-replace="true"></span>
+    <br>
+    <label>Širina(m):</label>
+    <input id="sirinaZida_${i}" name="BrojZidovaLista[${i}].Sirina"
+           type="number" step="0.5" min="0.5" max="100" required
+           class="form-control" />
+    <span class="field-validation-valid text-danger" data-valmsg-for="BrojZidovaLista[${i}].Sirina" data-valmsg-replace="true"></span>
+    <br>
+    <div id="praznineZida_${i}" class="mt-3"></div>
+    <button type="button" id="dodajPrazninuBtn_${i}"
+            class="btn btn-sm btn-outline-secondary mt-2"
+            onclick="dodajPrazninu(${i})" disabled>Dodaj prazninu</button>
+`;
+
+                setTimeout(() => {
+
+                    document.getElementById(`visinaZida_${i}`)
+                        .addEventListener("input", () => {
+                            kontrolirajGumbPraznina(i);
+                            osvjeziLimitPraznina(i);
+                        });
+
+                    document.getElementById(`sirinaZida_${i}`)
+                        .addEventListener("input", () => {
+                            kontrolirajGumbPraznina(i);
+                            osvjeziLimitPraznina(i);
+                        });
+                }, 0);
+                
                 container.appendChild(zidDiv);
             }
 
             $.validator.unobtrusive.parse("#kalkulatorForm");
             validacijaForme();
+            document.getElementById("submitBtn").style.display = "block";
         }
 
         function dodajPrazninu(zidIndex) {
             const container = document.getElementById(`praznineZida_${zidIndex}`);
             const broj = container.querySelectorAll(".praznina-blok").length;
 
+            const zidVisina = parseFloat(document.getElementById(`visinaZida_${zidIndex}`).value);
+            const zidSirina = parseFloat(document.getElementById(`sirinaZida_${zidIndex}`).value);
+
             const div = document.createElement("div");
             div.className = "bg-light p-2 my-1 praznina-blok";
 
             div.innerHTML = `
-                <label>Tip:</label>
-                <input name="BrojZidovaLista[${zidIndex}].Praznine[${broj}].Tip" class="form-control" placeholder="Prozor, vrata..." required />
-                <span class="field-validation-valid text-danger"
-                      data-valmsg-for="BrojZidovaLista[${zidIndex}].Praznine[${broj}].Tip"
-                      data-valmsg-replace="true"></span>
-                <br>
-                <label>Visina:</label>
-                <input name="BrojZidovaLista[${zidIndex}].Praznine[${broj}].Visina" type="number" step="0.01" min="0.1" max="100" class="form-control" required />
-                <span class="field-validation-valid text-danger"
-                      data-valmsg-for="BrojZidovaLista[${zidIndex}].Praznine[${broj}].Visina"
-                      data-valmsg-replace="true"></span>
-                <br>
-                <label>Širina:</label>
-                <input name="BrojZidovaLista[${zidIndex}].Praznine[${broj}].Sirina" type="number" step="0.01" min="0.1" max="100" class="form-control" required />
-                <span class="field-validation-valid text-danger"
-                      data-valmsg-for="BrojZidovaLista[${zidIndex}].Praznine[${broj}].Sirina"
-                      data-valmsg-replace="true"></span>
-              
-                <div class="d-flex justify-content-end mt-2">
-                    <button type="button" class="btn btn-sm btn-danger"
-                            onclick="this.closest('.praznina-blok').remove(); validacijaForme();">Obriši prazninu</button>
-                </div>
-            `;
+        <label>Tip praznine:</label>
+<input name="BrojZidovaLista[${zidIndex}].Praznine[${broj}].Tip"
+       id="prazninaTip_${zidIndex}_${broj}"
+       class="form-control"
+       placeholder="Prozor, vrata..." required
+       oninput="validirajPrazninu(${zidIndex}, ${broj})" />
+<span class="field-validation-valid text-danger"
+      data-valmsg-for="BrojZidovaLista[${zidIndex}].Praznine[${broj}].Tip"
+      data-valmsg-replace="true"></span>
+        <br>
+        <label>Visina(m):</label>
+        <input id="prazninaVisina_${zidIndex}_${broj}"
+               name="BrojZidovaLista[${zidIndex}].Praznine[${broj}].Visina"
+               type="number" step="0.5" min="0.1"
+               max="${zidVisina}"class="form-control" required
+               oninput="validirajPrazninu(${zidIndex}, ${broj})" />
+        <span class="field-validation-valid text-danger"
+              data-valmsg-for="BrojZidovaLista[${zidIndex}].Praznine[${broj}].Visina"
+              data-valmsg-replace="true"></span>
+        <br>
+        <label>Širina(m):</label>
+        <input id="prazninaSirina_${zidIndex}_${broj}"
+               name="BrojZidovaLista[${zidIndex}].Praznine[${broj}].Sirina"
+               type="number" step="0.5" min="0.1"
+               max="${zidSirina}" class="form-control" required
+               oninput="validirajPrazninu(${zidIndex}, ${broj})" />
+        <span class="field-validation-valid text-danger"
+              data-valmsg-for="BrojZidovaLista[${zidIndex}].Praznine[${broj}].Sirina"
+              data-valmsg-replace="true"></span>
+
+        <div class="d-flex justify-content-end mt-2">
+            <button type="button" class="btn btn-sm btn-danger"
+                    onclick="this.closest('.praznina-blok').remove(); validacijaForme();">Obriši prazninu</button>
+        </div>
+    `;
+
             container.appendChild(div);
+            osvjeziLimitPraznina(zidIndex);
             $.validator.unobtrusive.parse("#kalkulatorForm");
         }
 
@@ -361,7 +488,7 @@
             const input = document.getElementById("Debljina");
             const error = document.getElementById("debljinaGreska");
             const value = input.value.trim();
-            const broj = parseFloat(value);
+            const broj  = Number(value);
 
             if (value === "") {
                 error.textContent = "Polje je obavezno.";
@@ -369,6 +496,10 @@
             }
             if (!Number.isFinite(broj)) {
                 error.textContent = "Unesite broj.";
+                return false;
+            }
+            if (!Number.isInteger(broj)) {
+                error.textContent = "Unesite cijeli broj.";
                 return false;
             }
             if (broj < 2 || broj > 25) {
@@ -380,9 +511,11 @@
             return true;
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
+            document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("brojZidova").addEventListener("input", validirajFormu);
             document.getElementById("Debljina").addEventListener("input", validirajFormu);
+            
+  
         });
 
         document.querySelector('#pdfForm').addEventListener('submit', function (e) {
@@ -414,5 +547,51 @@
                 this.appendChild(sakriveno);
             });
         });
+
+        function kontrolirajGumbPraznina(index) {
+            const visina = parseFloat(document.getElementById(`visinaZida_${index}`).value);
+            const sirina = parseFloat(document.getElementById(`sirinaZida_${index}`).value);
+            const btn = document.getElementById(`dodajPrazninuBtn_${index}`);
+
+            const valid = Number.isFinite(visina) && visina > 0 && Number.isFinite(sirina) && sirina > 0;
+            btn.disabled = !valid;
+        }
+        
+        function validirajPrazninu(zidIndex, prazninaIndex) {
+            const zidVisina = parseFloat(document.getElementById(`visinaZida_${zidIndex}`).value);
+            const zidSirina = parseFloat(document.getElementById(`sirinaZida_${zidIndex}`).value);
+            const prazninaVisina = parseFloat(document.getElementById(`prazninaVisina_${zidIndex}_${prazninaIndex}`).value);
+            const prazninaSirina = parseFloat(document.getElementById(`prazninaSirina_${zidIndex}_${prazninaIndex}`).value);
+
+            const visinaError = document.querySelector(`[data-valmsg-for="BrojZidovaLista[${zidIndex}].Praznine[${prazninaIndex}].Visina"]`);
+            const sirinaError = document.querySelector(`[data-valmsg-for="BrojZidovaLista[${zidIndex}].Praznine[${prazninaIndex}].Sirina"]`);
+
+            const tipInput = document.getElementById(`prazninaTip_${zidIndex}_${prazninaIndex}`);
+            const tipError = document.querySelector(`[data-valmsg-for="BrojZidovaLista[${zidIndex}].Praznine[${prazninaIndex}].Tip"]`);
+
+            if (tipInput && tipError) {
+                if (tipInput.value.trim() === "") {
+                    tipError.textContent = "Ovo polje je obavezno.";
+                } else {
+                    tipError.textContent = "";
+                }
+}
+
+            
+
+
+            /*if (Number.isFinite(prazninaVisina) && prazninaVisina > zidVisina) {
+                visinaError.textContent = `Praznina ne može biti viša od zida (${zidVisina}m).`;
+            } else {
+                visinaError.textContent = "";
+            }
+
+            if (Number.isFinite(prazninaSirina) && prazninaSirina > zidSirina) {
+                sirinaError.textContent = `Praznina ne može biti šira od zida (${zidSirina}m).`;
+            } else {
+                sirinaError.textContent = "";
+            } */
+            
+}
     </script>
 }

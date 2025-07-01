@@ -8,10 +8,13 @@ public class RegisterView
 {
     [Required(ErrorMessage = "Unesi korisničko ime!")]
     [Display(Name = "Korisničko ime")]
+    [RegularExpression(@"^(?!\s*$)[a-zA-ZčćžšđČĆŽŠĐ0-9\s]{1,40}$", ErrorMessage = "Korisničko ime može sadržavati samo slova, brojeve i razmake i ne smije biti prazno.")]
     public string UserName { get; set; }
 
     [Required(ErrorMessage = "Unesi email adresu!")]
     [EmailAddress(ErrorMessage = "Unesite ispravnu email adresu")]
+    [RegularExpression(@"\S+", ErrorMessage = "Email ne može sadržavati razmake.")]
+
     public string Email { get; set; }
     
     [Required(ErrorMessage = "Kontakt broj je obavezan.")]
@@ -19,9 +22,12 @@ public class RegisterView
     [Display(Name = "Kontakt broj")]
     public string KontaktBroj { get; set; }
     
-    [Display(Name = "Unesi zaporku")]
     [Required(ErrorMessage = "Unesi lozinku!")]
+    [StringLength(100, MinimumLength = 10, ErrorMessage = "Lozinka mora imati najmanje 10 znakova.")]
+    [RegularExpression(@"^(?=.*[A-Z])(?=.*\d)(?=.*[^\w\d\s]).+$",
+        ErrorMessage = "Lozinka mora sadržavati veliko slovo, broj i poseban znak.")]
     [DataType(DataType.Password)]
+    [Display(Name = "Unesi zaporku")]
     public string Password { get; set; }
     
     [Display(Name = "Potvrdi zaporku")]
